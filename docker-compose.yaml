@@ -13,7 +13,7 @@ services:
       - 3306:3306
     volumes:
       - db-data:/var/lib/mysql
-    cpus: 1.0
+    cpus: 2.0
     mem_limit: 1G
     mem_reservation: 215m
 
@@ -43,9 +43,9 @@ services:
       - ./src:/home/shorturl/src
       - ./conf:/home/shorturl/conf
       - ./logs:/home/shorturl/logs
-    cpus: 1.0
-    mem_limit: 1G
-    mem_reservation: 215m
+    cpus: 4.0
+    mem_limit: 2G
+    mem_reservation: 1000m
 
   acceptance-test:
     build:
