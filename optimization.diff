@@ -1,0 +1,113 @@
+diff -ruN old/conf/app.yml new/conf/app.yml
+--- old/conf/app.yml	2020-09-16 23:08:24.000000000 +0800
++++ new/conf/app.yml	2020-09-16 23:18:08.000000000 +0800
+@@ -4,6 +4,8 @@
+ database:
+   name_or_url: mysql://client:password@mysql/short_url_db
+   echo: False
++  pool_size: 100
++  max_overflow: 5
+   isolation_level: REPEATABLE READ
+ 
+ redis:
+diff -ruN old/src/accessors/urls_tab.py new/src/accessors/urls_tab.py
+--- old/src/accessors/urls_tab.py	2020-09-16 23:08:24.000000000 +0800
++++ new/src/accessors/urls_tab.py	2020-09-16 23:18:08.000000000 +0800
+@@ -10,7 +10,11 @@
+ from utils.time import current_timestamp
+ 
+ 
+-class MysqlUrlsTabAccessor(UrlsTabAccessor):
++class CachedMysqlUrlsTabAccessor(UrlsTabAccessor):
++    _NULL = 'null'
++
++    def __init__(self):
++        self._short_key_mapping_cache = RedisCache(space='short_key')
+ 
+     def create(self, short_key: str, url: str) -> int:
+         """
+@@ -24,9 +28,15 @@
+         )
+         with session_ctx() as session:
+             session.add(record)
++        self._short_key_mapping_cache.set(short_key, url)
+         return record.id
+ 
+     def find_last_by_short_key(self, short_key: str) -> Optional[str]:
++        url = self._get_from_cache(short_key)
++
++        if url is not None:
++            return url
++
+         with session_ctx() as session:
+             record = (
+                 session.query(UrlsTab)
+@@ -36,6 +46,14 @@
+             )
+             url = record.url if record else None
+ 
++        self._short_key_mapping_cache.set(short_key, url or self._NULL, nx=True)
++
++        return url
++
++    def _get_from_cache(self, short_key) -> Optional[str]:
++        url = self._short_key_mapping_cache.get(short_key)
++        if url == self._NULL:
++            return None
+         return url
+ 
+     def find_match_by_url(self, url: str) -> Optional[Tuple[str, str]]:
+diff -ruN old/src/api.py new/src/api.py
+--- old/src/api.py	2020-09-16 23:10:59.000000000 +0800
++++ new/src/api.py	2020-09-16 23:18:08.000000000 +0800
+@@ -1,9 +1,12 @@
++from gevent import monkey
++monkey.patch_all()
++
+ import logging
+ import traceback
+ 
+ from flask import Flask
+ 
+-from accessors.urls_tab import MysqlUrlsTabAccessor
++from accessors.urls_tab import CachedMysqlUrlsTabAccessor
+ from common.exceptions import ShortUrlException
+ from conf import Conf
+ from managers.default import DefaultShortUrlManager
+@@ -17,7 +20,7 @@
+ 
+ 
+ def create_urls_view():
+-    urls_tab_accessor = MysqlUrlsTabAccessor()
++    urls_tab_accessor = CachedMysqlUrlsTabAccessor()
+     generator = AutoIncShortKeyGenerator(random_step=100)
+     short_url_manager = DefaultShortUrlManager(urls_tab_accessor, generator)
+     short_urls_view = ShortUrlsView(short_url_manager)
+diff -ruN old/src/config.py new/src/config.py
+--- old/src/config.py	2020-09-16 23:08:24.000000000 +0800
++++ new/src/config.py	2020-09-16 23:18:08.000000000 +0800
+@@ -1,5 +1,6 @@
+ backlog = 2048
+-worker_class = 'sync'
++worker_class = 'gevent'
++worker_connections = 500
+ max_requests = 100000
+ max_requests_jitter = 3000
+ timeout = 1200
+diff -ruN old/src/db/__init__.py new/src/db/__init__.py
+--- old/src/db/__init__.py	2020-09-16 23:08:24.000000000 +0800
++++ new/src/db/__init__.py	2020-09-16 23:18:08.000000000 +0800
+@@ -6,11 +6,10 @@
+ from sqlalchemy import create_engine, event
+ from sqlalchemy.engine import Engine
+ from sqlalchemy.orm import sessionmaker
+-from sqlalchemy.pool import NullPool
+ 
+ from conf import Conf
+ 
+-engine = create_engine(**Conf['database'], poolclass=NullPool)
++engine = create_engine(**Conf['database'])
+ Session = sessionmaker(bind=engine)
+ sqlLogger = logging.getLogger('sql')
+ 
+Binary files old/src/managers/generators/.DS_Store and new/src/managers/generators/.DS_Store differ

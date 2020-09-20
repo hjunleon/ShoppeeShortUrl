@@ -1,0 +1,201 @@
+diff -ruN old/src/api.py new/src/api.py
+--- old/src/api.py	2020-09-16 23:08:24.000000000 +0800
++++ new/src/api.py	2020-09-16 23:10:59.000000000 +0800
+@@ -7,7 +7,7 @@
+ from common.exceptions import ShortUrlException
+ from conf import Conf
+ from managers.default import DefaultShortUrlManager
+-from managers.generators.default import ShortKeyGenerator
++from managers.generators.auto_inc import AutoIncShortKeyGenerator
+ from routes import add_short_url_routes
+ from views.shorten import ShortUrlsView
+ 
+@@ -18,7 +18,7 @@
+ 
+ def create_urls_view():
+     urls_tab_accessor = MysqlUrlsTabAccessor()
+-    generator = ShortKeyGenerator()
++    generator = AutoIncShortKeyGenerator(random_step=100)
+     short_url_manager = DefaultShortUrlManager(urls_tab_accessor, generator)
+     short_urls_view = ShortUrlsView(short_url_manager)
+     return short_urls_view
+Binary files old/src/managers/.DS_Store and new/src/managers/.DS_Store differ
+Binary files old/src/managers/generators/.DS_Store and new/src/managers/generators/.DS_Store differ
+diff -ruN old/src/managers/generators/auto_inc.py new/src/managers/generators/auto_inc.py
+--- old/src/managers/generators/auto_inc.py	1970-01-01 07:30:00.000000000 +0730
++++ new/src/managers/generators/auto_inc.py	2020-09-16 23:10:59.000000000 +0800
+@@ -0,0 +1,24 @@
++import random
++
++from managers.generators import UniqueShortKeyGenerator
++from utils import base62
++from utils.redis import redis_client
++
++
++class AutoIncShortKeyGenerator(UniqueShortKeyGenerator):
++    KEY = 'shortkey:gen:autoinc'
++    MAX_STEP = 1000
++
++    DEFAULT_INIT = 1599647941
++
++    def __init__(self, init_value=DEFAULT_INIT, random_step=0):
++        redis = redis_client()
++        redis.setnx(self.KEY, init_value)
++        self.random_step = min(max(1, random_step), self.MAX_STEP)
++        self._init_value = init_value
++
++    def generate(self, url) -> str:
++        redis = redis_client()
++        step = 1 if self.random_step <= 1 else random.randint(1, self.random_step)
++        uid = redis.incr(self.KEY, step)
++        return base62.encode(uid)
+diff -ruN old/src/managers/generators/default.py new/src/managers/generators/default.py
+--- old/src/managers/generators/default.py	2020-09-16 23:08:24.000000000 +0800
++++ new/src/managers/generators/default.py	2020-09-16 23:10:59.000000000 +0800
+@@ -4,4 +4,4 @@
+ class ShortKeyGenerator(AbstractShortKeyGenerator):
+ 
+     def generate(self, url) -> str:
+-        raise NotImplementedError
++        pass
+diff -ruN old/stress-test/create.js new/stress-test/create.js
+--- old/stress-test/create.js	1970-01-01 07:30:00.000000000 +0730
++++ new/stress-test/create.js	2020-09-16 23:10:59.000000000 +0800
+@@ -0,0 +1,41 @@
++import http from 'k6/http';
++import { check } from 'k6';
++
++export let options = {
++    scenarios: {
++        create: {
++            executor: 'constant-vus',
++            vus: 30,
++            duration: '1m',
++            exec: 'create'
++        }
++    }
++};
++
++var params = {
++    'headers': {
++        'Content-Type': 'application/json'
++    }
++};
++
++var service_url = __ENV.SERVICE_URL
++if (!service_url) {
++    service_url = 'http://localhost:8080/'
++}
++const shorten_url = service_url + 'urls';
++
++const payload = (ts, vu, iter) => `{"url":"https://shopee.sg/search?keyword=${ts}+${vu}+${iter}"}`;
++
++export function setup() {
++    return { timestamp: (new Date()).getTime() }
++}
++
++export function create(data) {
++    let res = http.post(
++        shorten_url,
++        payload(data.timestamp, __VU, __ITER),
++        params
++    );
++    check(res, { 'create OK status': r => r.status == 200 });
++}
++
+diff -ruN old/stress-test/resolve.js new/stress-test/resolve.js
+--- old/stress-test/resolve.js	1970-01-01 07:30:00.000000000 +0730
++++ new/stress-test/resolve.js	2020-09-16 23:10:59.000000000 +0800
+@@ -0,0 +1,63 @@
++import http from 'k6/http';
++import { check, group } from 'k6';
++
++export let options = {
++    scenarios: {
++        resolve: {
++            executor: 'constant-vus',
++            vus: 500,
++            duration: '1m',
++            exec: 'resolve'
++        }
++    }
++};
++
++var params = {
++    'headers': {
++        'Content-Type': 'application/json'
++    }
++};
++
++var service_url = __ENV.SERVICE_URL
++var random_portion = __ENV.RANDOM_PORTION
++if (!random_portion) {
++    // 80% of requests hits 20% of URLs
++    random_portion = 5
++}
++
++if (!service_url) {
++    service_url = 'http://localhost:8080/'
++}
++var shorten_url = service_url + '/urls';
++var shopee_url = 'https://shopee.sg';
++
++const random_short_url = (ts, vu, iter) => `${service_url}${ts}+${vu}+${iter}"}`;
++
++export function setup() {
++    let res = http.post(
++        shorten_url,
++        JSON.stringify({
++            'url': shopee_url
++        }),
++        params
++    )
++    let short_url = JSON.parse(res.body).short_url;
++    let url_parts = short_url.split('/');
++    let short_key = url_parts.pop();
++
++    return {
++        fixed_short_url: service_url + short_key,
++        timestamp: (new Date()).getTime()
++    };
++}
++
++export function resolve(data) {
++    if (__ITER % random_portion === 0) {
++        let res = http.get(random_short_url(data.timestamp, __VU, __ITER));
++        check(res, {'Not found status': r => r.status == 404});
++    } else {
++        let res = http.get(data.fixed_short_url);
++        check(res, {'resolve OK status': r => r.status == 200});
++    }
++}
++
+diff -ruN old/stress-test/run.sh new/stress-test/run.sh
+--- old/stress-test/run.sh	1970-01-01 07:30:00.000000000 +0730
++++ new/stress-test/run.sh	2020-09-16 23:10:59.000000000 +0800
+@@ -0,0 +1,25 @@
++#!/usr/bin/env bash
++
++compatible_realpath () {
++	if command -v realpath &> /dev/null
++	then
++		realpath "$1"
++	else
++		[[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
++	fi
++}
++
++FILE_PATH=$( compatible_realpath "$0" )
++DIR_PATH=$( dirname "$FILE_PATH" )
++ROOT_PATH=$( dirname "$DIR_PATH" )
++
++TESTS=(create resolve)
++
++RANDOM_PORTION=$1
++
++for TEST in "${TESTS[@]}"; do
++    echo
++    echo "=================================== $TEST ==================================="
++    echo
++    docker-compose --project-directory "$ROOT_PATH" run -T stress-test run -q -e RANDOM_PORTION="$RANDOM_PORTION" - < "$DIR_PATH/${TEST}.js"
++done

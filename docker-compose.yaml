@@ -1,0 +1,66 @@
+version: "2.4"
+
+services:
+  mysql:
+    build:
+      context: ./dockerfiles/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: short_url_db
+      MYSQL_USER: client
+      MYSQL_PASSWORD: password
+    ports:
+      - 3306:3306
+    volumes:
+      - db-data:/var/lib/mysql
+    cpus: 1.0
+    mem_limit: 1G
+    mem_reservation: 215m
+
+  redis:
+    build:
+      context: ./dockerfiles/redis
+    ports:
+      - 6379:6379
+    cpus: 1.0
+    mem_limit: 1G
+    mem_reservation: 215m
+
+  nginx:
+    build:
+      context: ./dockerfiles/nginx
+    ports:
+      - 8080:80
+    volumes:
+      - ./logs:/var/log/nginx
+
+  short-url:
+    cap_add:
+      - SYS_PTRACE
+    build:
+      context: ./dockerfiles/short-url
+    volumes:
+      - ./src:/home/shorturl/src
+      - ./conf:/home/shorturl/conf
+      - ./logs:/home/shorturl/logs
+    cpus: 1.0
+    mem_limit: 1G
+    mem_reservation: 215m
+
+  acceptance-test:
+    build:
+      context: ./dockerfiles/acceptance-test
+    volumes:
+      - ./acceptance-test/tests:/home/acceptance-test/tests
+      - ./conf:/home/acceptance-test/conf
+
+  stress-test:
+    build:
+      context: ./dockerfiles/stress-test
+    environment:
+      SERVICE_URL: "http://nginx:80/"
+
+
+volumes:
+  db-data:
+

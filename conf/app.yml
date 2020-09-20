@@ -1,0 +1,20 @@
+flask:
+  DEBUG: False
+
+database:
+  name_or_url: mysql://client:password@mysql/short_url_db
+  echo: False
+  pool_size: 100
+  max_overflow: 5
+  isolation_level: REPEATABLE READ
+
+redis:
+  host: redis
+  port: 6379
+  db: 0
+  max_connections: 1000
+  encoding: utf8
+  decode_responses: True
+
+app:
+  site: http://localhost:8080

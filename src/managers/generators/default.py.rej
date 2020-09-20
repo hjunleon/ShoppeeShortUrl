@@ -1,0 +1,8 @@
+--- src/managers/generators/default.py	2020-09-16 23:08:24.000000000 +0800
++++ src/managers/generators/default.py	2020-09-16 23:10:59.000000000 +0800
+@@ -4,4 +4,4 @@
+ class ShortKeyGenerator(AbstractShortKeyGenerator):
+ 
+     def generate(self, url) -> str:
+-        raise NotImplementedError
++        pass

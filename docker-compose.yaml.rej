@@ -1,0 +1,11 @@
+--- docker-compose.yaml
++++ docker-compose.yaml
+@@ -31,6 +31,8 @@ services:
+       context: ./dockerfiles/nginx
+     ports:
+       - 8080:80
++    volumes:
++      - ./logs:/var/log/nginx
+ 
+   short-url:
+     cap_add:

@@ -1,0 +1,20 @@
+--- src/api.py	2020-09-16 23:08:24.000000000 +0800
++++ src/api.py	2020-09-16 23:10:59.000000000 +0800
+@@ -7,7 +7,7 @@
+ from common.exceptions import ShortUrlException
+ from conf import Conf
+ from managers.default import DefaultShortUrlManager
+-from managers.generators.default import ShortKeyGenerator
++from managers.generators.auto_inc import AutoIncShortKeyGenerator
+ from routes import add_short_url_routes
+ from views.shorten import ShortUrlsView
+ 
+@@ -18,7 +18,7 @@
+ 
+ def create_urls_view():
+     urls_tab_accessor = MysqlUrlsTabAccessor()
+-    generator = ShortKeyGenerator()
++    generator = AutoIncShortKeyGenerator(random_step=100)
+     short_url_manager = DefaultShortUrlManager(urls_tab_accessor, generator)
+     short_urls_view = ShortUrlsView(short_url_manager)
+     return short_urls_view
