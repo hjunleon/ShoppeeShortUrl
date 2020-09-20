@@ -1,0 +1,180 @@
+ERROR 2020-09-20 15:53:22,830 root:53 Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/shorturl/src/views/shorten.py", line 21, in create_short_url
+    short_key = self.short_url_manager.create(url)
+  File "/home/shorturl/src/managers/default.py", line 29, in create
+    return self._generate_new_short_key(url)
+  File "/home/shorturl/src/managers/default.py", line 32, in _generate_new_short_key
+    short_key = self.short_key_generator.generate(url)
+  File "/home/shorturl/src/managers/generators/default.py", line 37, in generate
+    return self.cur_int.toString()
+AttributeError: 'int' object has no attribute 'toString'
+
+ERROR 2020-09-20 15:53:22,874 root:53 Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/shorturl/src/views/shorten.py", line 21, in create_short_url
+    short_key = self.short_url_manager.create(url)
+  File "/home/shorturl/src/managers/default.py", line 29, in create
+    return self._generate_new_short_key(url)
+  File "/home/shorturl/src/managers/default.py", line 32, in _generate_new_short_key
+    short_key = self.short_key_generator.generate(url)
+  File "/home/shorturl/src/managers/generators/default.py", line 37, in generate
+    return self.cur_int.toString()
+AttributeError: 'int' object has no attribute 'toString'
+
+ERROR 2020-09-20 15:53:22,888 root:53 Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/shorturl/src/views/shorten.py", line 21, in create_short_url
+    short_key = self.short_url_manager.create(url)
+  File "/home/shorturl/src/managers/default.py", line 29, in create
+    return self._generate_new_short_key(url)
+  File "/home/shorturl/src/managers/default.py", line 32, in _generate_new_short_key
+    short_key = self.short_key_generator.generate(url)
+  File "/home/shorturl/src/managers/generators/default.py", line 37, in generate
+    return self.cur_int.toString()
+AttributeError: 'int' object has no attribute 'toString'
+
+ERROR 2020-09-20 15:53:22,903 root:53 Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/shorturl/src/views/shorten.py", line 21, in create_short_url
+    short_key = self.short_url_manager.create(url)
+  File "/home/shorturl/src/managers/default.py", line 29, in create
+    return self._generate_new_short_key(url)
+  File "/home/shorturl/src/managers/default.py", line 32, in _generate_new_short_key
+    short_key = self.short_key_generator.generate(url)
+  File "/home/shorturl/src/managers/generators/default.py", line 37, in generate
+    return self.cur_int.toString()
+AttributeError: 'int' object has no attribute 'toString'
+
+ERROR 2020-09-20 15:55:26,088 root:53 Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/shorturl/src/views/shorten.py", line 21, in create_short_url
+    short_key = self.short_url_manager.create(url)
+  File "/home/shorturl/src/managers/default.py", line 29, in create
+    return self._generate_new_short_key(url)
+  File "/home/shorturl/src/managers/default.py", line 32, in _generate_new_short_key
+    short_key = self.short_key_generator.generate(url)
+  File "/home/shorturl/src/managers/generators/default.py", line 37, in generate
+    return str(self._init_value)
+AttributeError: 'int' object has no attribute 'toString'
+
+ERROR 2020-09-20 15:55:26,104 root:53 Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/shorturl/src/views/shorten.py", line 21, in create_short_url
+    short_key = self.short_url_manager.create(url)
+  File "/home/shorturl/src/managers/default.py", line 29, in create
+    return self._generate_new_short_key(url)
+  File "/home/shorturl/src/managers/default.py", line 32, in _generate_new_short_key
+    short_key = self.short_key_generator.generate(url)
+  File "/home/shorturl/src/managers/generators/default.py", line 37, in generate
+    return str(self._init_value)
+AttributeError: 'int' object has no attribute 'toString'
+
+ERROR 2020-09-20 15:55:26,124 root:53 Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/shorturl/src/views/shorten.py", line 21, in create_short_url
+    short_key = self.short_url_manager.create(url)
+  File "/home/shorturl/src/managers/default.py", line 29, in create
+    return self._generate_new_short_key(url)
+  File "/home/shorturl/src/managers/default.py", line 32, in _generate_new_short_key
+    short_key = self.short_key_generator.generate(url)
+  File "/home/shorturl/src/managers/generators/default.py", line 37, in generate
+    return str(self._init_value)
+AttributeError: 'int' object has no attribute 'toString'
+
+ERROR 2020-09-20 15:55:26,140 root:53 Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/shorturl/src/views/shorten.py", line 21, in create_short_url
+    short_key = self.short_url_manager.create(url)
+  File "/home/shorturl/src/managers/default.py", line 29, in create
+    return self._generate_new_short_key(url)
+  File "/home/shorturl/src/managers/default.py", line 32, in _generate_new_short_key
+    short_key = self.short_key_generator.generate(url)
+  File "/home/shorturl/src/managers/generators/default.py", line 37, in generate
+    return str(self._init_value)
+AttributeError: 'int' object has no attribute 'toString'
+
+ERROR 2020-09-20 15:55:42,809 root:53 Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/shorturl/src/views/shorten.py", line 21, in create_short_url
+    short_key = self.short_url_manager.create(url)
+  File "/home/shorturl/src/managers/default.py", line 29, in create
+    return self._generate_new_short_key(url)
+  File "/home/shorturl/src/managers/default.py", line 32, in _generate_new_short_key
+    short_key = self.short_key_generator.generate(url)
+  File "/home/shorturl/src/managers/generators/default.py", line 37, in generate
+    return base36.encode(uid)
+AttributeError: 'int' object has no attribute 'toString'
+
+ERROR 2020-09-20 15:55:42,823 root:53 Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/shorturl/src/views/shorten.py", line 21, in create_short_url
+    short_key = self.short_url_manager.create(url)
+  File "/home/shorturl/src/managers/default.py", line 29, in create
+    return self._generate_new_short_key(url)
+  File "/home/shorturl/src/managers/default.py", line 32, in _generate_new_short_key
+    short_key = self.short_key_generator.generate(url)
+  File "/home/shorturl/src/managers/generators/default.py", line 37, in generate
+    return base36.encode(uid)
+AttributeError: 'int' object has no attribute 'toString'
+
+ERROR 2020-09-20 15:55:42,837 root:53 Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/shorturl/src/views/shorten.py", line 21, in create_short_url
+    short_key = self.short_url_manager.create(url)
+  File "/home/shorturl/src/managers/default.py", line 29, in create
+    return self._generate_new_short_key(url)
+  File "/home/shorturl/src/managers/default.py", line 32, in _generate_new_short_key
+    short_key = self.short_key_generator.generate(url)
+  File "/home/shorturl/src/managers/generators/default.py", line 37, in generate
+    return base36.encode(uid)
+AttributeError: 'int' object has no attribute 'toString'
+
+ERROR 2020-09-20 15:55:42,855 root:53 Traceback (most recent call last):
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/usr/local/lib/python3.8/dist-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/shorturl/src/views/shorten.py", line 21, in create_short_url
+    short_key = self.short_url_manager.create(url)
+  File "/home/shorturl/src/managers/default.py", line 29, in create
+    return self._generate_new_short_key(url)
+  File "/home/shorturl/src/managers/default.py", line 32, in _generate_new_short_key
+    short_key = self.short_key_generator.generate(url)
+  File "/home/shorturl/src/managers/generators/default.py", line 37, in generate
+    return base36.encode(uid)
+AttributeError: 'int' object has no attribute 'toString'
+

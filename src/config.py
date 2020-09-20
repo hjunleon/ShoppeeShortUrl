@@ -9,4 +9,4 @@ preload_app = False
 capture_output = True
 keepalive = 30
 bind = '0.0.0.0:5000'
-workers = 3
+workers = 6

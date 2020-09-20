@@ -14,7 +14,7 @@ from managers.generators.default import ShortKeyGenerator
 from managers.generators.auto_inc import AutoIncShortKeyGenerator
 from routes import add_short_url_routes
 from views.shorten import ShortUrlsView
-
+from utils import snowflake
 
 def init_configs(_app):
     _app.config.update(Conf['flask'])
